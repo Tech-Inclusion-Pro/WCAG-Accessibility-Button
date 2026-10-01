@@ -9,7 +9,7 @@ A self-contained **"Display settings" button** you can drop into any HTML page. 
 
 It was built for university course pages (UIC SPED 101) and is shared here so anyone — especially educators — can add it to their own pages, or hand it to an AI tool and say *"include this."*
 
-**Try it:** download this repository and open [`demo.html`](demo.html) in any browser.
+**Try it live:** [tech-inclusion-pro.github.io/WCAG-Accessibility-Button/demo.html](https://tech-inclusion-pro.github.io/WCAG-Accessibility-Button/demo.html) — or download the repo and open [`demo.html`](demo.html) in any browser.
 
 ---
 
