@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WCAG Accessibility Button — Demo</title>
+<style>
+/* Demo page styles. Built with the widget's design tokens (var(--bg),
+   var(--ink), var(--brand-1), …) so every palette restyles the whole page.
+   Your page can do the same — see the README. */
+body {
+  margin: 0;
+  background: var(--bg, #ffffff);
+  color: var(--ink, #1c1a2e);
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: var(--lh, 1.6);
+}
+.wrap { max-width: 46rem; margin: 0 auto; padding: 0 1.25rem 6rem; }
+header {
+  background: linear-gradient(118deg, var(--brand-1, #3a2b95), var(--brand-2, #6f2fa6) 52%, var(--brand-3, #a23b84));
+  color: var(--on-brand, #fff);
+  padding: 2.5rem 0;
+  margin-bottom: 2rem;
+}
+html[data-palette="hc"] header { background: var(--bg); border-block-end: 3px solid var(--accent); color: var(--accent); }
+h1 { margin: 0 0 .5rem; font-size: 2.2rem; line-height: 1.15; }
+h2 { color: var(--brand-1, #3a2b95); margin-top: 2.5rem; }
+html[data-palette="hc"] h2 { color: var(--accent); }
+a { color: var(--brand-1, #3a2b95); }
+.card {
+  background: var(--surface, #f7f5fb);
+  border: 2px solid var(--line, #d8d3e6);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  margin: 1rem 0;
+}
+html[data-palette="hc"] .card { border-color: var(--accent); }
+.spin {
+  width: 2rem; height: 2rem; border-radius: 6px;
+  background: var(--brand-2, #6f2fa6);
+  animation: demo-spin calc(var(--dur, 200ms) * 10) linear infinite;
+}
+@keyframes demo-spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>WCAG Accessibility Button</h1>
+    <p>A self-contained display-settings widget for any HTML page. Click the <strong>Display settings</strong> button (bottom right) and try every option on this page.</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <h2>What to try</h2>
+  <ul>
+    <li><strong>Text size</strong> — the whole page scales, up to 150%.</li>
+    <li><strong>Text spacing</strong> — line height, letter, word, and paragraph spacing open up; "Widest" meets the WCAG 1.4.12 metrics.</li>
+    <li><strong>Color</strong> — color-vision friendly, monochrome, and yellow-on-black high contrast palettes restyle this entire page.</li>
+    <li><strong>Reading font</strong> — switches body text to OpenDyslexic.</li>
+    <li><strong>Pointer</strong> — bigger or high-contrast cursors, plus an optional trail.</li>
+    <li><strong>Motion</strong> — the square below spins; "Slow down" and "Stop" control it live.</li>
+    <li><strong>Button position</strong> — pick a corner, drag the grip, or nudge it with arrow keys.</li>
+  </ul>
+
+  <div class="card">
+    <p style="margin-top:0"><strong>Animation test:</strong> this square is driven by the widget's <code>--dur</code> variable.</p>
+    <div class="spin" aria-hidden="true"></div>
+  </div>
+
+  <h2>Keyboard support</h2>
+  <p>Tab to the button and press Enter. Focus lands on the close button; Escape closes the panel and focus returns. Every control is a native radio or checkbox, so arrow keys work inside each group. Focus the grip and press the arrow keys (Shift for bigger steps) to move the panel without a mouse.</p>
+
+  <h2>Nothing leaves this page</h2>
+  <p>Your choices are saved in your own browser with <code>localStorage</code>. Reload the page — they persist. There are no network requests, no cookies, and no tracking of any kind.</p>
+
+  <p>Get the code: <a href="https://github.com/Tech-Inclusion-Pro/WCAG-Accessibility-Button">github.com/Tech-Inclusion-Pro/WCAG-Accessibility-Button</a></p>
+</main>
+
+<!-- =====================================================================
+     WCAG ACCESSIBILITY BUTTON  ·  "Display settings" widget
+     Tech Inclusion Pro · https://github.com/Tech-Inclusion-Pro/WCAG-Accessibility-Button
+     License: MIT
+
+     WHAT THIS IS
+     A self-contained floating "Display settings" button. Readers can change
+     text size, text spacing, color palette, reading font (OpenDyslexic),
+     cursor size and trail, animation speed, and where the button sits.
+     Choices are saved in the reader's own browser (localStorage) and are
+     never sent anywhere. No frameworks, no dependencies, no network calls.
+
+     HOW TO INSTALL (3 steps)
+     1. Copy EVERYTHING in this file and paste it into your HTML page,
+        just before the closing </body> tag.
+     2. Fonts (optional): put the fonts/ folder from this repository next to
+        your HTML file so the OpenDyslexic option works. If you skip this,
+        the option still works — it falls back to Comic Sans MS / Verdana.
+     3. Optional: add <div id="a11yHost"></div> where you want the widget to
+        sit when it is "docked" in the page flow (used inside auto-height
+        iframes such as Canvas LMS). If you don't, one is created for you at
+        the top of <body>.
+
+     MAKING THE PALETTES RESTYLE *YOUR WHOLE PAGE*
+     The widget sets CSS custom properties on :root (--bg, --surface, --ink,
+     --ink-soft, --line, --brand-1, --brand-2, --brand-3, --on-brand,
+     --accent). If you build your page's own CSS with these variables, every
+     palette (color-vision friendly, monochrome, high contrast) restyles the
+     entire page. If you don't, the widget still applies sensible page-wide
+     background/text/link colors for the non-default palettes, and all other
+     settings (size, spacing, font, cursor, motion) work everywhere.
+
+     CAUTION: if your stylesheet already defines custom properties with the
+     same names (--bg, --ink, …), rename them here or in your own CSS.
+     ===================================================================== -->
+
+<style>
+/* =========================================================================
+   A11Y WIDGET — FONTS
+   OpenDyslexic (SIL OFL 1.1). Falls back to Comic Sans/Verdana if missing.
+   ========================================================================= */
+@font-face {
+  font-family: 'OpenDyslexicLocal';
+  src: url('fonts/OpenDyslexic-Regular.woff') format('woff');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'OpenDyslexicLocal';
+  src: url('fonts/OpenDyslexic-Bold.woff') format('woff');
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+
+/* =========================================================================
+   A11Y WIDGET — DESIGN TOKENS
+   The default ("Course colors") palette. Override --brand-1/2/3 to match
+   your own brand. All contrast pairs meet WCAG 2.1 AA.
+   ========================================================================= */
+:root {
+  --bg:        #ffffff;
+  --surface:   #f7f5fb;
+  --ink:       #1c1a2e;
+  --ink-soft:  #46425f;
+  --line:      #d8d3e6;
+
+  --brand-1:   #3a2b95;
+  --brand-2:   #6f2fa6;
+  --brand-3:   #a23b84;
+  --on-brand:  #ffffff;
+
+  --accent:    #6f2fa6;
+  --focus:     #1c1a2e;
+  --focus-alt: #ffffff;
+
+  --ok:        #145c34;
+  --no:        #8f1d24;
+
+  --radius: 10px;
+  --dur: 200ms;
+  --fs: 1;
+  --lh: 1.6;
+  --ls: normal;
+  --ws: normal;
+  --para: 1em;
+}
+
+/* Color-vision friendly: blue and orange, separable across protan, deutan,
+   and tritan vision. */
+html[data-palette="cvd"] {
+  --brand-1: #00456e;
+  --brand-2: #1b6ea8;
+  --brand-3: #8a3d00;
+  --accent:  #00456e;
+  --surface: #f2f6f9;
+  --line:    #c9d7e2;
+  --ok:      #00456e;
+  --no:      #8a3d00;
+}
+
+/* Monochrome: grayscale only. */
+html[data-palette="mono"] {
+  --brand-1: #1f1f1f;
+  --brand-2: #3d3d3d;
+  --brand-3: #565656;
+  --accent:  #1f1f1f;
+  --ink:     #141414;
+  --ink-soft:#3d3d3d;
+  --surface: #f3f3f3;
+  --line:    #c9c9c9;
+  --ok:      #141414;
+  --no:      #141414;
+}
+
+/* High contrast: yellow on black (contrast ratio ≥ 7:1). */
+html[data-palette="hc"] {
+  --bg:       #000000;
+  --surface:  #0d0d0d;
+  --ink:      #ffffff;
+  --ink-soft: #f2f2f2;
+  --line:     #ffffff;
+  --brand-1:  #000000;
+  --brand-2:  #000000;
+  --brand-3:  #000000;
+  --on-brand: #ffe500;
+  --accent:   #ffe500;
+  --focus:    #ffe500;
+  --focus-alt:#000000;
+  --ok:       #ffe500;
+  --no:       #ffe500;
+}
+
+html[data-textsize="1"] { --fs: 1.15; }
+html[data-textsize="2"] { --fs: 1.30; }
+html[data-textsize="3"] { --fs: 1.50; }
+
+/* "Widest" meets the WCAG 1.4.12 text-spacing metrics:
+   line height ≥ 1.5, letter ≥ 0.12em, word ≥ 0.16em, paragraph ≥ 2em. */
+html[data-spacing="1"] { --lh: 1.7;  --ls: 0.06em; --ws: 0.10em; --para: 1.6em; }
+html[data-spacing="2"] { --lh: 1.85; --ls: 0.12em; --ws: 0.16em; --para: 2em;   }
+
+html[data-motion="slow"] { --dur: 900ms; }
+html[data-motion="none"] { --dur: 1ms; }
+@media (prefers-reduced-motion: reduce) {
+  html[data-motion="auto"] { --dur: 1ms; }
+}
+
+/* =========================================================================
+   A11Y WIDGET — PAGE-WIDE EFFECTS
+   These rules are what make the settings reach your page. They only kick
+   in when the reader picks a non-default option, so your page's own look
+   is untouched until then.
+   ========================================================================= */
+html { font-size: calc(100% * var(--fs)); }
+
+html[data-spacing="1"] body,
+html[data-spacing="2"] body {
+  line-height: var(--lh);
+  letter-spacing: var(--ls);
+  word-spacing: var(--ws);
+}
+html[data-spacing="1"] p, html[data-spacing="1"] li,
+html[data-spacing="2"] p, html[data-spacing="2"] li {
+  margin-block-end: var(--para);
+}
+
+html[data-palette="cvd"] body,
+html[data-palette="mono"] body,
+html[data-palette="hc"] body {
+  background: var(--bg);
+  color: var(--ink);
+}
+html[data-palette="cvd"] a  { color: var(--brand-1); }
+html[data-palette="mono"] a { color: var(--brand-1); }
+html[data-palette="hc"] a   { color: var(--accent); }
+
+html[data-dyslexic="on"] body,
+html[data-dyslexic="on"] button,
+html[data-dyslexic="on"] select,
+html[data-dyslexic="on"] input,
+html[data-dyslexic="on"] textarea,
+html[data-dyslexic="on"] summary {
+  font-family: 'OpenDyslexicLocal', 'OpenDyslexic', 'Comic Sans MS', Verdana, Tahoma, Arial, sans-serif;
+}
+
+/* Strong, always-visible keyboard focus (WCAG 2.4.7). */
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+html[data-palette="hc"] :focus-visible { outline-color: var(--accent); }
+
+/* Screen-reader-only text (used for the live status announcements). */
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+}
+
+/* Large / extra large / high contrast cursors (inline SVG, no files). */
+html[data-cursor="large"] body {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 32 32'%3E%3Cpath d='M5 2 L5 25 L11 19 L15 29 L19 27 L15 18 L24 18 Z' fill='%23ffffff' stroke='%23000000' stroke-width='2.2' stroke-linejoin='round'/%3E%3C/svg%3E") 6 3, auto;
+}
+html[data-cursor="large"] a, html[data-cursor="large"] button, html[data-cursor="large"] label, html[data-cursor="large"] input, html[data-cursor="large"] textarea, html[data-cursor="large"] summary {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 32 32'%3E%3Cpath d='M13 30 L13 20 L10 20 C7 20 7 16 10 16 L13 16 L13 5 C13 2 17 2 17 5 L17 13 L19 13 L19 6 C19 3 23 3 23 6 L23 13 L25 13 L25 8 C25 5 29 5 29 8 L29 24 C29 28 26 30 23 30 Z' fill='%23ffffff' stroke='%23000000' stroke-width='2.2' stroke-linejoin='round'/%3E%3C/svg%3E") 19 3, pointer;
+}
+html[data-cursor="xlarge"] body {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 32 32'%3E%3Cpath d='M5 2 L5 25 L11 19 L15 29 L19 27 L15 18 L24 18 Z' fill='%23ffffff' stroke='%23000000' stroke-width='2.2' stroke-linejoin='round'/%3E%3C/svg%3E") 9 4, auto;
+}
+html[data-cursor="xlarge"] a, html[data-cursor="xlarge"] button, html[data-cursor="xlarge"] label, html[data-cursor="xlarge"] input, html[data-cursor="xlarge"] textarea, html[data-cursor="xlarge"] summary {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 32 32'%3E%3Cpath d='M13 30 L13 20 L10 20 C7 20 7 16 10 16 L13 16 L13 5 C13 2 17 2 17 5 L17 13 L19 13 L19 6 C19 3 23 3 23 6 L23 13 L25 13 L25 8 C25 5 29 5 29 8 L29 24 C29 28 26 30 23 30 Z' fill='%23ffffff' stroke='%23000000' stroke-width='2.2' stroke-linejoin='round'/%3E%3C/svg%3E") 26 4, pointer;
+}
+html[data-cursor="contrast"] body {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 32 32'%3E%3Cpath d='M5 2 L5 25 L11 19 L15 29 L19 27 L15 18 L24 18 Z' fill='%23ffe500' stroke='%23000000' stroke-width='2.6' stroke-linejoin='round'/%3E%3C/svg%3E") 8 3, auto;
+}
+html[data-cursor="contrast"] a, html[data-cursor="contrast"] button, html[data-cursor="contrast"] label, html[data-cursor="contrast"] input, html[data-cursor="contrast"] textarea, html[data-cursor="contrast"] summary {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 32 32'%3E%3Cpath d='M13 30 L13 20 L10 20 C7 20 7 16 10 16 L13 16 L13 5 C13 2 17 2 17 5 L17 13 L19 13 L19 6 C19 3 23 3 23 6 L23 13 L25 13 L25 8 C25 5 29 5 29 8 L29 24 C29 28 26 30 23 30 Z' fill='%23ffe500' stroke='%23000000' stroke-width='2.6' stroke-linejoin='round'/%3E%3C/svg%3E") 22 3, pointer;
+}
+
+/* =========================================================================
+   A11Y WIDGET — WIDGET CHROME
+   Everything below is scoped to the widget itself (.a11y) so it cannot
+   collide with your page's own .panel / .fab / .opt classes.
+   ========================================================================= */
+#a11yHost { min-height: 0; }
+
+.a11y {
+  position: fixed;
+  inset-block-end: 1rem;
+  inset-inline-end: 1rem;
+  z-index: 90;
+  display: flex; flex-direction: column; align-items: flex-end; gap: .6rem;
+}
+
+/* Docked state: the widget lives in the page flow instead of floating.
+   Used when the page is inside an auto-height iframe (e.g. Canvas LMS),
+   where a fixed element pins to the bottom of the whole document and is
+   never visible while reading. */
+.a11y[data-docked="yes"] {
+  position: static;
+  align-items: flex-start;
+  margin: 0 0 1.5rem;
+}
+.a11y[data-docked="yes"] .panel { position: relative; }
+
+.a11y .fab {
+  display: inline-flex; align-items: center; gap: .5rem;
+  min-height: 48px; min-width: 48px;
+  padding: .7rem 1.05rem;
+  background: var(--brand-1); color: var(--on-brand);
+  border: 3px solid var(--on-brand);
+  border-radius: 999px;
+  box-shadow: 0 4px 14px rgba(0,0,0,.32);
+  font: inherit; font-weight: bold; font-size: .95rem;
+  letter-spacing: normal; cursor: pointer; touch-action: none;
+}
+html[data-palette="hc"] .a11y .fab { background: var(--bg); color: var(--accent); border-color: var(--accent); }
+.a11y .fab:hover { background: var(--brand-2); }
+html[data-palette="hc"] .a11y .fab:hover { background: var(--accent); color: var(--bg); }
+.a11y .fab__icon { flex: none; }
+
+.a11y .panel {
+  width: min(21.5rem, calc(100vw - 2rem));
+  max-height: min(30rem, calc(100vh - 7rem));
+  overflow-y: auto;
+  background: var(--bg); color: var(--ink);
+  border: 3px solid var(--brand-1);
+  border-radius: var(--radius);
+  box-shadow: 0 10px 30px rgba(0,0,0,.28);
+  padding: 0 1rem 1rem;
+  text-align: left;
+}
+html[data-palette="hc"] .a11y .panel { border-color: var(--accent); }
+.a11y .panel[hidden] { display: none; }
+
+.a11y .panel__bar {
+  position: sticky; top: 0;
+  display: flex; align-items: center; gap: .5rem;
+  margin: 0 -1rem 0; padding: .6rem 1rem;
+  background: var(--brand-1); color: var(--on-brand);
+}
+html[data-palette="hc"] .a11y .panel__bar { background: var(--bg); color: var(--accent); border-block-end: 2px solid var(--accent); }
+
+.a11y .panel__title { margin: 0; font-size: 1rem; flex: 1; letter-spacing: normal; color: inherit; font-weight: bold; }
+
+.a11y .grip {
+  min-width: 44px; min-height: 44px;
+  display: grid; place-items: center;
+  background: transparent; color: inherit;
+  border: 2px solid currentColor; border-radius: 6px;
+  cursor: grab; font: inherit; touch-action: none;
+}
+.a11y .grip:active { cursor: grabbing; }
+
+.a11y .panel__close {
+  min-width: 44px; min-height: 44px;
+  background: transparent; color: inherit;
+  border: 2px solid currentColor; border-radius: 6px;
+  font: inherit; font-size: 1.1rem; font-weight: bold; cursor: pointer;
+}
+.a11y .panel__close:hover, .a11y .grip:hover { background: rgba(255,255,255,.18); }
+
+.a11y .panel fieldset { border: 0; border-block-start: 1px solid var(--line); margin: 0; padding: 1rem 0 .25rem; }
+.a11y .panel legend {
+  padding: 0; margin: 0 0 .5rem;
+  font-weight: bold; font-size: .95rem;
+  color: var(--brand-1); letter-spacing: normal;
+}
+html[data-palette="hc"] .a11y .panel legend { color: var(--accent); }
+
+.a11y .opt {
+  display: flex; align-items: flex-start; gap: .6rem;
+  min-height: 44px; padding: .35rem .4rem; margin: 0;
+  border-radius: 6px; cursor: pointer; line-height: 1.35;
+}
+.a11y .opt:hover { background: var(--surface); }
+.a11y .opt input { flex: none; width: 1.25rem; height: 1.25rem; margin-top: .1rem; accent-color: var(--brand-2); cursor: pointer; }
+html[data-palette="hc"] .a11y .opt input { accent-color: var(--accent); }
+.a11y .opt span { font-size: .95rem; }
+.a11y .opt small { display: block; color: var(--ink-soft); font-size: .82rem; }
+html[data-palette="hc"] .a11y .opt small { color: var(--ink); }
+
+.a11y .hint { font-size: .82rem; color: var(--ink-soft); margin: .1rem 0 .6rem; }
+html[data-palette="hc"] .a11y .hint { color: var(--ink); }
+
+.a11y .reset {
+  width: 100%; min-height: 48px; margin-top: 1rem;
+  background: var(--brand-3); color: var(--on-brand);
+  border: 3px solid transparent; border-radius: 8px;
+  font: inherit; font-weight: bold; cursor: pointer;
+}
+html[data-palette="hc"] .a11y .reset { background: var(--bg); color: var(--accent); border-color: var(--accent); }
+.a11y .reset:hover { background: var(--brand-1); }
+
+.a11y[data-corner="br"] { inset-block-end: 1rem; inset-block-start: auto; inset-inline-end: 1rem; inset-inline-start: auto; align-items: flex-end; flex-direction: column; }
+.a11y[data-corner="bl"] { inset-block-end: 1rem; inset-block-start: auto; inset-inline-start: 1rem; inset-inline-end: auto; align-items: flex-start; flex-direction: column; }
+.a11y[data-corner="tr"] { inset-block-start: 1rem; inset-block-end: auto; inset-inline-end: 1rem; inset-inline-start: auto; align-items: flex-end; flex-direction: column-reverse; }
+.a11y[data-corner="tl"] { inset-block-start: 1rem; inset-block-end: auto; inset-inline-start: 1rem; inset-inline-end: auto; align-items: flex-start; flex-direction: column-reverse; }
+.a11y[data-docked="yes"][data-corner] { inset: auto; }
+
+.trail-dot {
+  position: fixed; top: 0; left: 0;
+  width: 14px; height: 14px; margin: -7px 0 0 -7px;
+  border-radius: 50%;
+  background: var(--brand-3); border: 2px solid var(--bg);
+  pointer-events: none; z-index: 80;
+}
+html[data-palette="hc"] .trail-dot { background: var(--accent); border-color: #000; }
+
+/* Windows High Contrast / forced-colors mode. */
+@media (forced-colors: active) {
+  .a11y .panel, .a11y .fab, .a11y .grip, .a11y .panel__close { border: 2px solid CanvasText; }
+}
+
+/* Small screens: icon-only button. */
+@media (max-width: 30rem) {
+  .a11y .fab__label { display: none; }
+}
+
+/* Never print the widget. */
+@media print {
+  .a11y, .trail-dot { display: none !important; }
+}
+</style>
+
+
+<!-- =====================================================================
+     A11Y WIDGET — MARKUP
+     ===================================================================== -->
+<div class="a11y" id="a11yWidget" data-corner="br">
+
+  <button type="button" class="fab" id="a11yToggle" aria-expanded="false" aria-controls="a11yPanel" aria-label="Display settings">
+    <svg class="fab__icon" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="2"/>
+      <circle cx="12" cy="6.2" r="1.7" fill="currentColor"/>
+      <path d="M5.5 9.3h13M12 9.6v5.1m0 0-2.9 5.2m2.9-5.2 2.9 5.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <span class="fab__label" aria-hidden="true">Display settings</span>
+  </button>
+
+  <div class="panel" id="a11yPanel" role="group" aria-labelledby="a11yTitle" hidden>
+
+    <div class="panel__bar">
+      <button type="button" class="grip" id="a11yGrip" aria-label="Move this panel. Drag with a pointer, or press the arrow keys while this button is focused.">
+        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <circle cx="8" cy="6" r="1.8" fill="currentColor"/><circle cx="16" cy="6" r="1.8" fill="currentColor"/>
+          <circle cx="8" cy="12" r="1.8" fill="currentColor"/><circle cx="16" cy="12" r="1.8" fill="currentColor"/>
+          <circle cx="8" cy="18" r="1.8" fill="currentColor"/><circle cx="16" cy="18" r="1.8" fill="currentColor"/>
+        </svg>
+      </button>
+      <h2 class="panel__title" id="a11yTitle">Display settings</h2>
+      <button type="button" class="panel__close" id="a11yClose" aria-label="Close display settings">&times;</button>
+    </div>
+
+    <fieldset>
+      <legend>Text size</legend>
+      <label class="opt"><input type="radio" name="textsize" value="0" checked><span>Default</span></label>
+      <label class="opt"><input type="radio" name="textsize" value="1"><span>Large <small>115%</small></span></label>
+      <label class="opt"><input type="radio" name="textsize" value="2"><span>Larger <small>130%</small></span></label>
+      <label class="opt"><input type="radio" name="textsize" value="3"><span>Largest <small>150%</small></span></label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Text spacing</legend>
+      <label class="opt"><input type="radio" name="spacing" value="0" checked><span>Default</span></label>
+      <label class="opt"><input type="radio" name="spacing" value="1"><span>Roomy</span></label>
+      <label class="opt"><input type="radio" name="spacing" value="2"><span>Widest <small>Meets the WCAG text-spacing metrics</small></span></label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Color</legend>
+      <p class="hint">These change the palette so colors stay separable. They do not simulate color blindness.</p>
+      <label class="opt"><input type="radio" name="palette" value="brand" checked><span>Page colors</span></label>
+      <label class="opt"><input type="radio" name="palette" value="cvd"><span>Color-vision friendly <small>Blue and orange, separable across protan, deutan, and tritan vision</small></span></label>
+      <label class="opt"><input type="radio" name="palette" value="mono"><span>Monochrome <small>Grayscale only</small></span></label>
+      <label class="opt"><input type="radio" name="palette" value="hc"><span>High contrast <small>Yellow on black</small></span></label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Reading font</legend>
+      <label class="opt"><input type="checkbox" id="optDyslexic"><span>OpenDyslexic font <small>Some readers prefer it. Research on whether it improves reading speed is mixed, so try it and keep it only if it helps you.</small></span></label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Pointer</legend>
+      <label class="opt"><input type="radio" name="cursor" value="default" checked><span>System cursor</span></label>
+      <label class="opt"><input type="radio" name="cursor" value="large"><span>Large cursor</span></label>
+      <label class="opt"><input type="radio" name="cursor" value="xlarge"><span>Extra large cursor</span></label>
+      <label class="opt"><input type="radio" name="cursor" value="contrast"><span>High contrast cursor <small>Yellow with a black outline</small></span></label>
+      <label class="opt"><input type="checkbox" id="optTrail"><span>Show a trail behind the cursor <small>Makes the pointer easier to follow</small></span></label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Motion</legend>
+      <label class="opt"><input type="radio" name="motion" value="auto" checked><span>Match my device setting</span></label>
+      <label class="opt"><input type="radio" name="motion" value="slow"><span>Slow down animation</span></label>
+      <label class="opt"><input type="radio" name="motion" value="none"><span>Stop animation</span></label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Button position</legend>
+      <p class="hint">You can also drag the grip at the top of this panel, or focus it and press the arrow keys.</p>
+      <label class="opt"><input type="radio" name="corner" value="br" checked><span>Bottom right</span></label>
+      <label class="opt"><input type="radio" name="corner" value="bl"><span>Bottom left</span></label>
+      <label class="opt"><input type="radio" name="corner" value="tr"><span>Top right</span></label>
+      <label class="opt"><input type="radio" name="corner" value="tl"><span>Top left</span></label>
+      <label class="opt"><input type="radio" name="corner" value="dock"><span>Keep it at the top of the page <small>Best inside Canvas, where a floating button can end up off screen</small></span></label>
+    </fieldset>
+
+    <button type="button" class="reset" id="a11yReset">Reset all display settings</button>
+  </div>
+</div>
+
+<p class="sr-only" role="status" aria-live="polite" id="a11yStatus"></p>
+
+
+<script>
+/* =========================================================================
+   A11Y WIDGET — BEHAVIOR
+   Plain JavaScript, no dependencies. Settings live in localStorage on the
+   reader's own device and are never sent anywhere.
+   ========================================================================= */
+(function () {
+  "use strict";
+
+  var root    = document.documentElement;
+  var widget  = document.getElementById('a11yWidget');
+  var host    = document.getElementById('a11yHost');
+  var toggle  = document.getElementById('a11yToggle');
+  var panel   = document.getElementById('a11yPanel');
+  var closeBt = document.getElementById('a11yClose');
+  var grip    = document.getElementById('a11yGrip');
+  var resetBt = document.getElementById('a11yReset');
+  var status  = document.getElementById('a11yStatus');
+
+  /* If the page did not provide a dock host, create one at the top of body. */
+  if (!host) {
+    host = document.createElement('div');
+    host.id = 'a11yHost';
+    document.body.insertBefore(host, document.body.firstChild);
+  }
+
+  /* Change this key if you want different pages to remember settings
+     separately. Pages sharing a key (and an origin) share settings. */
+  var KEY = 'tip-a11y-widget-v1';
+
+  var DEFAULTS = {
+    textsize: '0', spacing: '0', palette: 'brand', cursor: 'default',
+    motion: 'auto', corner: 'br', dyslexic: false, trail: false,
+    x: null, y: null, cornerChosen: false
+  };
+  var state = Object.assign({}, DEFAULTS);
+
+  function save() {
+    try { window.localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+  }
+  function load() {
+    try {
+      var raw = window.localStorage.getItem(KEY);
+      if (raw) state = Object.assign({}, DEFAULTS, JSON.parse(raw));
+    } catch (e) { state = Object.assign({}, DEFAULTS); }
+  }
+
+  function say(msg) { status.textContent = msg; }
+
+  /* ---- Dock when floating is geometrically impossible -------------------
+     Canvas (and other LMSes) embed pages in an auto-height iframe. In that
+     situation the viewport is as tall as the whole document, so a
+     position:fixed element pins to the very bottom of the page and is never
+     visible while reading. When we detect that, the widget moves into
+     #a11yHost in the page flow. An explicit user choice always wins over
+     the detection.
+     ---------------------------------------------------------------------- */
+  function floatingIsUseless() {
+    var docH = Math.max(
+      document.documentElement.scrollHeight,
+      document.body ? document.body.scrollHeight : 0
+    );
+    return (window.innerHeight >= docH - 4);
+  }
+
+  function dock(on) {
+    if (on) {
+      if (widget.parentNode !== host) host.appendChild(widget);
+      widget.setAttribute('data-docked', 'yes');
+    } else {
+      if (widget.parentNode !== document.body) document.body.appendChild(widget);
+      widget.removeAttribute('data-docked');
+    }
+  }
+
+  function apply() {
+    root.setAttribute('data-textsize', state.textsize);
+    root.setAttribute('data-spacing',  state.spacing);
+    root.setAttribute('data-palette',  state.palette);
+    root.setAttribute('data-cursor',   state.cursor);
+    root.setAttribute('data-motion',   state.motion);
+    root.setAttribute('data-dyslexic', state.dyslexic ? 'on' : 'off');
+    root.setAttribute('data-trail',    state.trail ? 'on' : 'off');
+
+    var docked = (state.corner === 'dock') ||
+                 (!state.cornerChosen && state.x === null && floatingIsUseless());
+    dock(docked);
+
+    if (!docked && state.x !== null && state.y !== null) {
+      widget.removeAttribute('data-corner');
+      widget.style.insetBlockStart  = state.y + 'px';
+      widget.style.insetInlineStart = state.x + 'px';
+      widget.style.insetBlockEnd    = 'auto';
+      widget.style.insetInlineEnd   = 'auto';
+    } else {
+      widget.setAttribute('data-corner', state.corner === 'dock' ? 'br' : state.corner);
+      widget.style.insetBlockStart = '';
+      widget.style.insetInlineStart = '';
+      widget.style.insetBlockEnd = '';
+      widget.style.insetInlineEnd = '';
+    }
+
+    syncControls();
+    trailEnabled = state.trail;
+  }
+
+  function syncControls() {
+    ['textsize','spacing','palette','cursor','motion','corner'].forEach(function (name) {
+      var el = panel.querySelector('input[name="' + name + '"][value="' + state[name] + '"]');
+      if (el) el.checked = true;
+    });
+    document.getElementById('optDyslexic').checked = state.dyslexic;
+    document.getElementById('optTrail').checked    = state.trail;
+  }
+
+  function openPanel() {
+    panel.hidden = false;
+    toggle.setAttribute('aria-expanded', 'true');
+    closeBt.focus();
+  }
+  function closePanel(returnFocus) {
+    panel.hidden = true;
+    toggle.setAttribute('aria-expanded', 'false');
+    if (returnFocus !== false) toggle.focus();
+  }
+
+  toggle.addEventListener('click', function () {
+    if (justDragged) { justDragged = false; return; }
+    panel.hidden ? openPanel() : closePanel();
+  });
+  closeBt.addEventListener('click', function () { closePanel(); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !panel.hidden) { e.preventDefault(); closePanel(); }
+  });
+
+  var LABELS = {
+    textsize: { '0':'Default text size', '1':'Large text', '2':'Larger text', '3':'Largest text' },
+    spacing:  { '0':'Default text spacing', '1':'Roomy text spacing', '2':'Widest text spacing' },
+    palette:  { brand:'Page colors', cvd:'Color-vision friendly palette', mono:'Monochrome', hc:'High contrast' },
+    cursor:   { 'default':'System cursor', large:'Large cursor', xlarge:'Extra large cursor', contrast:'High contrast cursor' },
+    motion:   { auto:'Motion matches your device setting', slow:'Animation slowed', none:'Animation stopped' },
+    corner:   { br:'Button moved to bottom right', bl:'Button moved to bottom left', tr:'Button moved to top right', tl:'Button moved to top left', dock:'Button kept at the top of the page' }
+  };
+
+  panel.addEventListener('change', function (e) {
+    var t = e.target;
+    if (t.type === 'radio' && LABELS[t.name]) {
+      state[t.name] = t.value;
+      if (t.name === 'corner') { state.x = null; state.y = null; state.cornerChosen = true; }
+      apply(); save(); say(LABELS[t.name][t.value]);
+    }
+    if (t.id === 'optDyslexic') {
+      state.dyslexic = t.checked;
+      apply(); save(); say(t.checked ? 'OpenDyslexic font on' : 'OpenDyslexic font off');
+    }
+    if (t.id === 'optTrail') {
+      state.trail = t.checked;
+      apply(); save();
+      if (!t.checked) clearTrail();
+      say(t.checked ? 'Cursor trail on' : 'Cursor trail off');
+    }
+  });
+
+  resetBt.addEventListener('click', function () {
+    state = Object.assign({}, DEFAULTS);
+    clearTrail(); apply(); save();
+    say('All display settings reset to default');
+  });
+
+  /* ---- Move the widget: pointer drag + keyboard ------------------------ */
+  var dragging = false, justDragged = false, startX = 0, startY = 0, baseX = 0, baseY = 0;
+
+  function currentBox() { return widget.getBoundingClientRect(); }
+
+  function clampTo(x, y) {
+    var b = currentBox();
+    var maxX = Math.max(0, window.innerWidth  - b.width  - 4);
+    var maxY = Math.max(0, window.innerHeight - b.height - 4);
+    return { x: Math.min(Math.max(4, x), maxX), y: Math.min(Math.max(4, y), maxY) };
+  }
+
+  function moveTo(x, y) {
+    if (widget.getAttribute('data-docked') === 'yes') return;
+    var p = clampTo(x, y);
+    state.x = Math.round(p.x); state.y = Math.round(p.y); state.cornerChosen = true;
+    apply();
+  }
+
+  function startDrag(e) {
+    if (widget.getAttribute('data-docked') === 'yes') return;
+    var b = currentBox();
+    dragging = true; baseX = b.left; baseY = b.top;
+    startX = e.clientX; startY = e.clientY;
+    e.currentTarget.setPointerCapture(e.pointerId);
+  }
+  function onDrag(e) {
+    if (!dragging) return;
+    var dx = e.clientX - startX, dy = e.clientY - startY;
+    if (Math.abs(dx) > 5 || Math.abs(dy) > 5) justDragged = true;
+    moveTo(baseX + dx, baseY + dy);
+    e.preventDefault();
+  }
+  function endDrag() {
+    if (!dragging) return;
+    dragging = false;
+    if (justDragged) { save(); say('Panel moved'); }
+    setTimeout(function () { justDragged = false; }, 0);
+  }
+
+  [grip, toggle].forEach(function (el) {
+    el.addEventListener('pointerdown', startDrag);
+    el.addEventListener('pointermove', onDrag);
+    el.addEventListener('pointerup', endDrag);
+    el.addEventListener('pointercancel', endDrag);
+  });
+
+  function nudge(e) {
+    var STEP = e.shiftKey ? 48 : 16;
+    var b = currentBox(), dx = 0, dy = 0;
+    if (e.key === 'ArrowLeft')  dx = -STEP;
+    else if (e.key === 'ArrowRight') dx = STEP;
+    else if (e.key === 'ArrowUp')    dy = -STEP;
+    else if (e.key === 'ArrowDown')  dy = STEP;
+    else return;
+    e.preventDefault();
+    moveTo(b.left + dx, b.top + dy);
+    save();
+  }
+  grip.addEventListener('keydown', nudge);
+  toggle.addEventListener('keydown', function (e) { if (e.altKey) nudge(e); });
+
+  window.addEventListener('resize', function () {
+    if (state.x !== null) { moveTo(state.x, state.y); save(); }
+    else { apply(); }
+  });
+
+  /* ---- Cursor trail ---------------------------------------------------- */
+  var trailEnabled = false, dots = [], MAX = 18, lastSpawn = 0;
+
+  function clearTrail() {
+    dots.forEach(function (d) { if (d.el.parentNode) d.el.parentNode.removeChild(d.el); });
+    dots = [];
+  }
+
+  document.addEventListener('pointermove', function (e) {
+    if (!trailEnabled || e.pointerType === 'touch') return;
+    var now = performance.now();
+    if (now - lastSpawn < 22) return;
+    lastSpawn = now;
+
+    var el = document.createElement('div');
+    el.className = 'trail-dot';
+    el.setAttribute('aria-hidden', 'true');
+    el.style.transform = 'translate(' + e.clientX + 'px,' + e.clientY + 'px)';
+    document.body.appendChild(el);
+    dots.push({ el: el, born: now });
+
+    while (dots.length > MAX) {
+      var old = dots.shift();
+      if (old.el.parentNode) old.el.parentNode.removeChild(old.el);
+    }
+  }, { passive: true });
+
+  (function fade() {
+    var now = performance.now();
+    for (var i = dots.length - 1; i >= 0; i--) {
+      var age = now - dots[i].born, life = 620;
+      if (age >= life) {
+        if (dots[i].el.parentNode) dots[i].el.parentNode.removeChild(dots[i].el);
+        dots.splice(i, 1);
+      } else {
+        var k = 1 - age / life;
+        dots[i].el.style.opacity = k.toFixed(3);
+        dots[i].el.style.scale = (0.35 + 0.65 * k).toFixed(3);
+      }
+    }
+    requestAnimationFrame(fade);
+  })();
+
+  load();
+  apply();
+  window.setTimeout(apply, 400);
+})();
+</script>
+<!-- ================== END WCAG ACCESSIBILITY BUTTON ==================== -->
+
+</body>
+</html>
